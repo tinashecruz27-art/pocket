@@ -1,28 +1,37 @@
-import json
+import sqlite3
 from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
+DATABASE = "pocket.db"
 
 
-def load_expenses():
-    try:
-        with open("expenses.json", "r") as file:
-            return json.load(file)
-    except FileNotFoundError:
-        return []
+def get_db():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
-def save_expenses(expenses):
-    with open("expenses.json", "w") as file:
-        json.dump(expenses, file, indent=2)
+def init_db():
+    conn = get_db()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            amount REAL NOT NULL,
+            category TEXT NOT NULL,
+            note TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+    conn.close()
 
 
 @app.route("/")
 def home():
-    expenses = load_expenses()
-    total = 0
-    for e in expenses:
-        total = total + e["amount"]
+    conn = get_db()
+    expenses = conn.execute("SELECT * FROM expenses ORDER BY id DESC").fetchall()
+    total = conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0] or 0
+    conn.close()
     return render_template("index.html", expenses=expenses, total=total)
 
 
@@ -32,12 +41,17 @@ def add():
     category = request.form["category"].lower()
     note = request.form["note"]
 
-    expenses = load_expenses()
-    expenses.append({"amount": amount, "category": category, "note": note})
-    save_expenses(expenses)
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO expenses (amount, category, note) VALUES (?, ?, ?)",
+        (amount, category, note),
+    )
+    conn.commit()
+    conn.close()
 
     return redirect("/")
 
 
 if __name__ == "__main__":
+    init_db()
     app.run(debug=True)
