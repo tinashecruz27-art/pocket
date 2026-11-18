@@ -112,3 +112,10 @@ li small {
 .filter button {
     margin-top: 0;
 }
+.chart-card {
+    margin-top: 12px;
+}
+
+.chart-card canvas {
+    max-height: 280px;
+}

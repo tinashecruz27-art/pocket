@@ -50,6 +50,11 @@
         </div>
     </div>
 
+    <div class="card chart-card">
+        <h3>Where your money goes</h3>
+        <canvas id="categoryChart"></canvas>
+    </div>
+
     <h2>My expenses</h2>
     <form method="get" action="/" class="filter">
         <select name="category">
@@ -76,5 +81,12 @@
         {% if selected %}Total for {{ selected }}{% else %}Total{% endif %}:
         {{ "%.2f"|format(total) }}
     </strong></p>
+
+    <script>
+        const chartLabels = {{ chart_labels | tojson }};
+        const chartValues = {{ chart_values | tojson }};
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/app.js"></script>
 </body>
 </html>

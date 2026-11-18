@@ -67,6 +67,10 @@ def home():
     """).fetchall()
 
     conn.close()
+
+    chart_labels = [c["category"] for c in by_category]
+    chart_values = [c["total"] for c in by_category]
+
     return render_template(
         "index.html",
         expenses=expenses,
@@ -74,6 +78,8 @@ def home():
         by_category=by_category,
         by_month=by_month,
         selected=selected,
+        chart_labels=chart_labels,
+        chart_values=chart_values,
     )
 
 
