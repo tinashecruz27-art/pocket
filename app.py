@@ -3,9 +3,11 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE = os.path.join(BASE_DIR, "pocket.db")
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
-DATABASE = "pocket.db"
 
 
 def get_db():
@@ -42,6 +44,10 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+
+# Create the tables as soon as the app is loaded (works locally AND on a server)
+init_db()
 
 
 # ---------- Accounts ----------
@@ -207,5 +213,4 @@ def add():
 
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True)
