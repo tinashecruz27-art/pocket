@@ -119,3 +119,13 @@ li small {
 .chart-card canvas {
     max-height: 280px;
 }
+a {
+    color: #2b59c3;
+}
+
+.error {
+    background-color: #fde8e8;
+    color: #b42318;
+    padding: 10px 14px;
+    border-radius: 8px;
+}
