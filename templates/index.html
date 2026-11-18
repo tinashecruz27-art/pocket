@@ -28,13 +28,53 @@
         <button>Add</button>
     </form>
 
+    <h2>Summary</h2>
+    <div class="summary">
+        <div class="card">
+            <h3>By category</h3>
+            {% for c in by_category %}
+                <div class="row">
+                    <span>{{ c["category"] }}</span>
+                    <span>{{ "%.2f"|format(c["total"]) }}</span>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="card">
+            <h3>By month</h3>
+            {% for m in by_month %}
+                <div class="row">
+                    <span>{{ m["month"] }}</span>
+                    <span>{{ "%.2f"|format(m["total"]) }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
     <h2>My expenses</h2>
+    <form method="get" action="/" class="filter">
+        <select name="category">
+            <option value="">All categories</option>
+            {% for c in by_category %}
+                <option value="{{ c['category'] }}" {% if c['category'] == selected %}selected{% endif %}>
+                    {{ c['category'] }}
+                </option>
+            {% endfor %}
+        </select>
+        <button>Filter</button>
+    </form>
+
     <ul>
         {% for e in expenses %}
-            <li>{{ "%.2f"|format(e["amount"]) }} - {{ e["category"] }} - {{ e["note"] }}</li>
+            <li>
+                <span>{{ "%.2f"|format(e["amount"]) }} - {{ e["category"] }} - {{ e["note"] }}</span>
+                <small>{{ e["created_at"] }}</small>
+            </li>
         {% endfor %}
     </ul>
 
-    <p><strong>Total: {{ "%.2f"|format(total) }}</strong></p>
+    <p><strong>
+        {% if selected %}Total for {{ selected }}{% else %}Total{% endif %}:
+        {{ "%.2f"|format(total) }}
+    </strong></p>
 </body>
 </html>

@@ -28,11 +28,53 @@ def init_db():
 
 @app.route("/")
 def home():
+    selected = request.args.get("category", "")
     conn = get_db()
-    expenses = conn.execute("SELECT * FROM expenses ORDER BY id DESC").fetchall()
-    total = conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0] or 0
+
+    if selected:
+        expenses = conn.execute("""
+            SELECT id, amount, category, note,
+                   datetime(created_at, 'localtime') AS created_at
+            FROM expenses
+            WHERE category = ?
+            ORDER BY id DESC
+        """, (selected,)).fetchall()
+        total = conn.execute(
+            "SELECT SUM(amount) FROM expenses WHERE category = ?", (selected,)
+        ).fetchone()[0] or 0
+    else:
+        expenses = conn.execute("""
+            SELECT id, amount, category, note,
+                   datetime(created_at, 'localtime') AS created_at
+            FROM expenses
+            ORDER BY id DESC
+        """).fetchall()
+        total = conn.execute("SELECT SUM(amount) FROM expenses").fetchone()[0] or 0
+
+    by_category = conn.execute("""
+        SELECT category, SUM(amount) AS total
+        FROM expenses
+        GROUP BY category
+        ORDER BY total DESC
+    """).fetchall()
+
+    by_month = conn.execute("""
+        SELECT strftime('%Y-%m', created_at, 'localtime') AS month,
+               SUM(amount) AS total
+        FROM expenses
+        GROUP BY month
+        ORDER BY month DESC
+    """).fetchall()
+
     conn.close()
-    return render_template("index.html", expenses=expenses, total=total)
+    return render_template(
+        "index.html",
+        expenses=expenses,
+        total=total,
+        by_category=by_category,
+        by_month=by_month,
+        selected=selected,
+    )
 
 
 @app.route("/add", methods=["POST"])

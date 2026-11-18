@@ -61,3 +61,54 @@ li {
     border-radius: 8px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
+.summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.card {
+    background-color: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+    margin-top: 0;
+    font-size: 15px;
+    color: #2b59c3;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+li small {
+    color: #888;
+    font-size: 12px;
+}
+
+.filter {
+    flex-direction: row;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    margin-bottom: 12px;
+}
+
+.filter select {
+    flex: 1;
+}
+
+.filter button {
+    margin-top: 0;
+}
